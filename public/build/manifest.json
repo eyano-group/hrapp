@@ -1,0 +1,35 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-omDb6458.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/js/app.tsx": {
+    "file": "assets/app-DXckezZH.js",
+    "name": "app",
+    "src": "resources/js/app.tsx",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/pages/Index.tsx"
+    ],
+    "css": [
+      "assets/app-omDb6458.css"
+    ]
+  },
+  "resources/js/pages/Index.tsx": {
+    "file": "assets/Index-CqH8fsFS.js",
+    "name": "Index",
+    "src": "resources/js/pages/Index.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.tsx"
+    ],
+    "css": [
+      "assets/app-omDb6458.css"
+    ]
+  }
+}
