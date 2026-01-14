@@ -201,7 +201,7 @@ const AttendanceForm: React.FC<AttendanceFormProps> = ({ onSuccess }) => {
             </div>
 
             {/* Date and Time Display */}
-            <div className="grid grid-cols-2 gap-4 rounded-2xl border border-border/40 bg-muted/30 p-5 backdrop-blur-sm">
+            <div className="grid grid-cols-2 gap-4 rounded-2xl border border-border/40 bg-muted/30 p-5 backdrop-blur-sm dark:bg-slate-900/50">
                 <div className="flex items-center gap-4">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
                         <Calendar className="h-6 w-6 text-primary" />
@@ -301,7 +301,7 @@ const AttendanceForm: React.FC<AttendanceFormProps> = ({ onSuccess }) => {
                         setSignatureMode(v as 'signature' | 'checkbox')
                     }
                 >
-                    <TabsList className="grid h-14 w-full grid-cols-2 rounded-2xl bg-muted/50 p-1.5">
+                    <TabsList className="grid h-14 w-full grid-cols-2 rounded-2xl bg-muted/50 p-1.5 dark:bg-slate-900/50">
                         <TabsTrigger
                             value="checkbox"
                             className="flex items-center justify-center gap-2 rounded-xl text-sm font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm"
@@ -319,7 +319,7 @@ const AttendanceForm: React.FC<AttendanceFormProps> = ({ onSuccess }) => {
                     </TabsList>
 
                     <TabsContent value="checkbox" className="mt-4">
-                        <div className="flex items-start gap-3 rounded-xl bg-secondary/30 p-4">
+                        <div className="flex items-start gap-3 rounded-xl bg-secondary/30 p-4 dark:bg-slate-900/30">
                             <Checkbox
                                 id="confirm"
                                 checked={checkboxConfirmed}
