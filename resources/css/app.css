@@ -108,6 +108,8 @@
     /* Warning - Orange/Yellow */
     --warning: oklch(0.776 0.178 53.58);
     --warning-foreground: oklch(0.205 0 0);
+
+    --brand-color: oklch(0.372 0.044 257.287);
 }
 
 .dark {
@@ -151,6 +153,8 @@
     /* Warning - Orange/Yellow */
     --warning: oklch(0.776 0.178 53.58);
     --warning-foreground: oklch(0.145 0 0);
+
+    --brand-color: oklch(0.372 0.044 257.287);
 }
 
 @layer base {

@@ -30,7 +30,7 @@ const Index: React.FC = () => {
 
     return (
         <>
-            <Head title='Accueil'/>
+            <Head title="Accueil" />
             <div className="flex min-h-screen flex-col bg-background">
                 {/* Background Decorative Elements */}
                 <div className="pointer-events-none fixed inset-0 overflow-hidden">

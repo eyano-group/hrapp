@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
@@ -390,6 +391,10 @@ export default function Dashboard({
                 <DialogContent className="rounded-2xl border-slate-100 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900">
                     <DialogHeader>
                         <DialogTitle>Ajouter un chauffeur</DialogTitle>
+                        <DialogDescription className="text-slate-500 dark:text-slate-400">
+                            Remplissez les informations ci-dessous pour créer un
+                            nouveau profil chauffeur.
+                        </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleAddDriver} className="space-y-4 pt-4">
                         <div className="space-y-2">
@@ -402,7 +407,7 @@ export default function Dashboard({
                                 }
                                 required
                                 placeholder="Jean Dupont"
-                                className="border-slate-200 bg-slate-50"
+                                className="dark:bg-slate-800"
                             />
                             {errorsNew.name && (
                                 <p className="text-sm text-red-500">
@@ -420,7 +425,7 @@ export default function Dashboard({
                                 }
                                 required
                                 placeholder="CH-001"
-                                className="border-slate-200 bg-slate-50"
+                                className="dark:bg-slate-800"
                             />
                             {errorsNew.matricule && (
                                 <p className="text-sm text-red-500">
@@ -437,7 +442,7 @@ export default function Dashboard({
                                     setNewData('phone', e.target.value)
                                 }
                                 placeholder="0123456789"
-                                className="border-slate-200 bg-slate-50"
+                                className="dark:bg-slate-800"
                             />
                             {errorsNew.phone && (
                                 <p className="text-sm text-red-500">
@@ -473,6 +478,10 @@ export default function Dashboard({
                 <DialogContent className="rounded-2xl border-slate-100 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900">
                     <DialogHeader>
                         <DialogTitle>Modifier le chauffeur</DialogTitle>
+                        <DialogDescription className="text-slate-500 dark:text-slate-400">
+                            Mettez à jour les informations du chauffeur
+                            sélectionné.
+                        </DialogDescription>
                     </DialogHeader>
                     <form
                         onSubmit={handleEditDriver}
@@ -487,7 +496,7 @@ export default function Dashboard({
                                     setEditData('name', e.target.value)
                                 }
                                 required
-                                className="border-slate-200 bg-slate-50"
+                                className="dark:bg-slate-800"
                             />
                             {errorsEdit.name && (
                                 <p className="text-sm text-red-500">
@@ -504,7 +513,7 @@ export default function Dashboard({
                                     setEditData('matricule', e.target.value)
                                 }
                                 required
-                                className="border-slate-200 bg-slate-50"
+                                className="dark:bg-slate-800"
                             />
                             {errorsEdit.matricule && (
                                 <p className="text-sm text-red-500">
@@ -520,7 +529,7 @@ export default function Dashboard({
                                 onChange={(e) =>
                                     setEditData('phone', e.target.value)
                                 }
-                                className="border-slate-200 bg-slate-50"
+                                className="dark:bg-slate-800"
                             />
                             {errorsEdit.phone && (
                                 <p className="text-sm text-red-500">

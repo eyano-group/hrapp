@@ -246,7 +246,7 @@ const AttendanceForm: React.FC<AttendanceFormProps> = ({ onSuccess }) => {
                         placeholder="Votre nom de famille"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        className="h-12 text-base"
+                        className="h-12 text-base dark:bg-slate-800"
                         required
                     />
                 </div>
@@ -254,7 +254,7 @@ const AttendanceForm: React.FC<AttendanceFormProps> = ({ onSuccess }) => {
                 <div className="space-y-2">
                     <Label
                         htmlFor="firstName"
-                        className="flex items-center gap-2 text-foreground"
+                        className="flex items-center gap-2"
                     >
                         <User className="h-4 w-4" />
                         Prénom <span className="text-destructive">*</span>
@@ -265,7 +265,7 @@ const AttendanceForm: React.FC<AttendanceFormProps> = ({ onSuccess }) => {
                         placeholder="Votre prénom"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
-                        className="h-12 text-base"
+                        className="h-12 text-base dark:bg-slate-800"
                         required
                     />
                 </div>
@@ -273,7 +273,7 @@ const AttendanceForm: React.FC<AttendanceFormProps> = ({ onSuccess }) => {
                 <div className="space-y-2">
                     <Label
                         htmlFor="matricule"
-                        className="flex items-center gap-2 text-foreground"
+                        className="flex items-center gap-2"
                     >
                         <Hash className="h-4 w-4" />
                         Matricule <span className="text-destructive">*</span>
@@ -284,7 +284,7 @@ const AttendanceForm: React.FC<AttendanceFormProps> = ({ onSuccess }) => {
                         placeholder="Votre matricule chauffeur"
                         value={matricule}
                         onChange={(e) => setMatricule(e.target.value)}
-                        className="h-12 text-base"
+                        className="h-12 text-base dark:bg-slate-800"
                         required
                     />
                 </div>

@@ -46,35 +46,40 @@ export default function Register() {
     };
 
     return (
-        <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+        <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-[var(--brand-color)]">
             {/* Background Elements */}
-            <div className="absolute top-[-10%] left-[-10%] h-[40%] w-[40%] animate-pulse rounded-full bg-purple-500/30 blur-[100px]" />
-            <div className="absolute right-[-10%] bottom-[-10%] h-[40%] w-[40%] animate-pulse rounded-full bg-blue-500/30 blur-[100px] delay-1000" />
+            <div className="absolute top-[-10%] left-[-10%] h-[50%] w-[50%] animate-pulse rounded-full bg-black/20 blur-[100px]" />
+            <div className="absolute right-[-10%] bottom-[-10%] h-[50%] w-[50%] animate-pulse rounded-full bg-white/10 blur-[100px] delay-1000" />
 
             <Head title="Inscription" />
 
-            <div className="relative z-10 w-full max-w-md animate-in rounded-2xl border border-white/20 bg-white/10 p-8 shadow-2xl backdrop-blur-xl duration-700 fade-in slide-in-from-bottom-8 zoom-in">
+            <div className="relative z-10 w-full max-w-md animate-in rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-2xl duration-700 fade-in slide-in-from-bottom-8 zoom-in">
                 <div className="mb-8 text-center">
+                    <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-white/10 shadow-inner backdrop-blur-md">
+                        <img
+                            src="/images/logo.png"
+                            alt=""
+                            className="h-12 w-12"
+                        />
+                    </div>
                     <h1 className="mb-2 text-3xl font-bold tracking-tight text-white">
                         Bienvenue
                     </h1>
-                    <p className="text-slate-300">
-                        Créez votre compte chauffeur
-                    </p>
+                    <p className="text-white/60">Créez votre compte</p>
                 </div>
 
                 <form onSubmit={submit} className="space-y-6">
                     <div className="space-y-2">
-                        <Label htmlFor="name" className="text-white">
+                        <Label htmlFor="name" className="text-white/80">
                             Nom complet
                         </Label>
                         <div className="relative">
-                            <User className="absolute top-2.5 left-3 h-5 w-5 text-slate-400" />
+                            <User className="absolute top-3 left-4 h-5 w-5 text-white/40" />
                             <Input
                                 id="name"
                                 name="name"
                                 value={data.name}
-                                className="border-white/10 bg-white/5 pl-10 text-white transition-all placeholder:text-slate-500 focus:border-purple-500 focus:ring-purple-500"
+                                className="h-12 border-white/10 bg-white/5 pl-12 text-white transition-all placeholder:text-white/20 focus:border-white/20 focus:bg-white/10 focus:ring-0"
                                 autoComplete="name"
                                 autoFocus
                                 onChange={(e) =>
@@ -85,23 +90,23 @@ export default function Register() {
                             />
                         </div>
                         {errors.name && (
-                            <p className="text-sm text-red-500">
+                            <p className="animate-in text-sm font-medium text-red-400 slide-in-from-top-1">
                                 {errors.name}
                             </p>
                         )}
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="phone" className="text-white">
+                        <Label htmlFor="phone" className="text-white/80">
                             Téléphone
                         </Label>
                         <div className="relative">
-                            <Smartphone className="absolute top-2.5 left-3 h-5 w-5 text-slate-400" />
+                            <Smartphone className="absolute top-3 left-4 h-5 w-5 text-white/40" />
                             <Input
                                 id="phone"
                                 name="phone"
                                 value={data.phone}
-                                className="border-white/10 bg-white/5 pl-10 text-white transition-all placeholder:text-slate-500 focus:border-purple-500 focus:ring-purple-500"
+                                className="h-12 border-white/10 bg-white/5 pl-12 text-white transition-all placeholder:text-white/20 focus:border-white/20 focus:bg-white/10 focus:ring-0"
                                 autoComplete="tel"
                                 onChange={(e) =>
                                     setData('phone', e.target.value)
@@ -111,14 +116,14 @@ export default function Register() {
                             />
                         </div>
                         {errors.phone && (
-                            <p className="text-sm text-red-500">
+                            <p className="animate-in text-sm font-medium text-red-400 slide-in-from-top-1">
                                 {errors.phone}
                             </p>
                         )}
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="pin" className="text-white">
+                        <Label htmlFor="pin" className="text-white/80">
                             Code PIN (4 chiffres)
                         </Label>
                         <div className="flex justify-center">
@@ -126,58 +131,60 @@ export default function Register() {
                                 maxLength={4}
                                 value={pin}
                                 onChange={handlePinChange}
-                                className="gap-2"
+                                className="gap-3"
                             >
                                 <InputOTPGroup>
-                                    <InputOTPSlot
-                                        index={0}
-                                        className="h-12 w-12 border-white/10 bg-white/5 text-lg text-white"
-                                    />
-                                    <InputOTPSlot
-                                        index={1}
-                                        className="h-12 w-12 border-white/10 bg-white/5 text-lg text-white"
-                                    />
-                                    <InputOTPSlot
-                                        index={2}
-                                        className="h-12 w-12 border-white/10 bg-white/5 text-lg text-white"
-                                    />
-                                    <InputOTPSlot
-                                        index={3}
-                                        className="h-12 w-12 border-white/10 bg-white/5 text-lg text-white"
-                                    />
+                                    {[0, 1, 2, 3].map((index) => (
+                                        <InputOTPSlot
+                                            key={index}
+                                            index={index}
+                                            className="h-14 w-14 border-white/10 bg-white/5 text-xl font-bold text-white transition-all focus:border-white/30 focus:bg-white/10"
+                                        />
+                                    ))}
                                 </InputOTPGroup>
                             </InputOTP>
                         </div>
                         {errors.pin_code && (
-                            <p className="text-sm text-red-500">
+                            <p className="animate-in text-center text-sm font-medium text-red-400 slide-in-from-top-1">
                                 {errors.pin_code}
                             </p>
                         )}
                         {errors.password && (
-                            <p className="text-sm text-red-500">
+                            <p className="animate-in text-center text-sm font-medium text-red-400 slide-in-from-top-1">
                                 {errors.password}
                             </p>
                         )}
                     </div>
 
                     <Button
-                        className="h-12 w-full transform rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 font-bold text-white shadow-lg transition-all hover:scale-[1.02] hover:from-purple-700 hover:to-blue-700 active:scale-[0.98]"
+                        className="h-14 w-full transform rounded-2xl bg-white text-lg font-bold text-[var(--brand-color)] shadow-xl transition-all hover:scale-[1.02] hover:bg-white/90 active:scale-[0.98]"
                         disabled={processing}
                     >
                         {processing ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                         ) : (
                             'Créer mon compte'
                         )}
                     </Button>
 
-                    <div className="mt-4 text-center">
+                    <div className="mt-6 text-center">
                         <Link
                             href={route('login')}
-                            className="text-sm text-slate-400 transition-colors hover:text-white"
+                            className="text-sm font-medium text-white/40 transition-colors hover:text-white"
                         >
-                            Déjà un compte ? Se connecter
+                            Déjà un compte ?{' '}
+                            <span className="text-white underline underline-offset-4">
+                                Se connecter
+                            </span>
                         </Link>
+                    </div>
+
+                    <div className="mt-8 border-t border-white/10 pt-6 text-center">
+                        <p className="text-xs font-medium tracking-wider text-white/30 uppercase">
+                            HRApp <span className="mx-1 text-white/10">|</span>{' '}
+                            <span className="text-white/20">powered by</span>{' '}
+                            <span className="text-white/40">EyanoGroup</span>
+                        </p>
                     </div>
                 </form>
             </div>
