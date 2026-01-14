@@ -20,20 +20,21 @@ class CreateNewUser implements CreatesNewUsers
     {
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
-            'email' => [
+            'phone' => [
                 'required',
                 'string',
-                'email',
                 'max:255',
                 Rule::unique(User::class),
             ],
-            'password' => $this->passwordRules(),
+            // We expect 'password' to be the PIN code or sent as 'pin_code' and mapped
+            'password' => ['required', 'string', 'min:4', 'max:6'], 
         ])->validate();
 
         return User::create([
             'name' => $input['name'],
-            'email' => $input['email'],
-            'password' => $input['password'],
+            'phone' => $input['phone'],
+            'pin_code' => $input['password'], // Store PIN in pin_code (optional if we want raw or encrypted separately)
+            'password' => $input['password'], // Hash the PIN as the password for Fortify
         ]);
     }
 }

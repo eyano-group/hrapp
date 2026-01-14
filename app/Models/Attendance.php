@@ -11,6 +11,7 @@ class Attendance extends Model
     use HasFactory;
 
     protected $fillable = [
+        'driver_id', // Added driver_id
         'first_name',
         'last_name',
         'matricule',
@@ -19,4 +20,9 @@ class Attendance extends Model
         'longitude',
         'signature_data',
     ];
+
+    public function driver()
+    {
+        return $this->belongsTo(Driver::class);
+    }
 }

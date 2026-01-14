@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->string('first_name')->nullable(); // Made nullable, use driver relationship
+            $table->string('last_name')->nullable(); // Made nullable
+            $table->foreignId('driver_id')->nullable()->constrained()->onDelete('set null');
             $table->string('matricule')->index();
             $table->enum('type', ['arrival', 'departure']);
             $table->decimal('latitude', 10, 8)->nullable();

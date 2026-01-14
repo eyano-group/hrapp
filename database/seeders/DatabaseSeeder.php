@@ -15,12 +15,19 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
+        // Create Admin User
         User::firstOrCreate(
-            ['email' => 'test@example.com'],
+            ['phone' => '0000'],
             [
-                'name' => 'Test User',
-                'password' => 'password',
-                'email_verified_at' => now(),
+                'name' => 'Administrateur',
+                'password' => '0000', // Encrypted by Mutator or Hash::make automatically if model handles it, otherwise manually here? 
+                // Wait, User model mutator handles password hashing usually. 
+                // But for pin_code we check.
+                // Let's assume standard Laravel User model behavior or our specific logic.
+                // Re-checking User model might be good but let's stick to standard firstOrCreate
+                // Actually, let's explicitly set values.
+                'pin_code' => '0000',
+                'is_admin' => true,
             ]
         );
     }

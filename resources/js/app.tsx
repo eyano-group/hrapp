@@ -1,4 +1,12 @@
+import { route } from 'ziggy-js';
 import '../css/app.css';
+
+declare global {
+    interface Window {
+        route: typeof route;
+    }
+}
+window.route = route;
 
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
@@ -31,4 +39,3 @@ createInertiaApp({
 
 // This will set light / dark mode on load...
 initializeTheme();
-        

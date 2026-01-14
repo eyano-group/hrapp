@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('phone')->unique(); // Added phone
+            $table->string('pin_code')->nullable(); // Added pin_code (encrypted)
+            $table->string('email')->nullable()->unique(); // Made email nullable
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable(); // Made password nullable (can be used for pin fallback or admin)
             $table->rememberToken();
             $table->timestamps();
         });

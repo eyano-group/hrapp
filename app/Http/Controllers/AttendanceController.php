@@ -57,55 +57,158 @@ class AttendanceController extends Controller
         ], 201);
     }
 
-    public function exportCsv(Request $request)
+    public function markPresent(Request $request)
     {
-        $managerName = $request->query('manager_name');
-        $managerMatricule = $request->query('manager_matricule');
+        $validated = $request->validate([
+            'driver_id' => 'required|exists:drivers,id',
+            'type' => 'required|in:arrival,departure',
+        ]);
 
-        // Static list of authorized managers
-        $authorizedManagers = [
-            ['name' => 'TSIMBA', 'matricule' => 'TSIMBA-01'],
-            ['name' => 'ADMIN', 'matricule' => 'ADMIN-2026'],
-        ];
+        $driver = \App\Models\Driver::findOrFail($validated['driver_id']);
+        
+        // Authorization check
+        if ($driver->user_id !== auth()->id()) {
+            abort(403);
+        }
 
-        $isAuthorized = false;
-        foreach ($authorizedManagers as $mgr) {
-            if ($mgr['name'] === $managerName && $mgr['matricule'] === $managerMatricule) {
-                $isAuthorized = true;
-                break;
+        // Logic check: prevent double arrival/departure
+        // Get the LAST attendance of today
+        $lastAttendance = Attendance::where('driver_id', $driver->id)
+            ->whereDate('created_at', Carbon::today())
+            ->latest()
+            ->first();
+
+        if ($validated['type'] === 'arrival') {
+            if ($lastAttendance && $lastAttendance->type === 'arrival') {
+                return back()->with('error', 'Chauffeur déjà marqué arrivé.');
+            }
+        } else {
+            // Depature
+            if (!$lastAttendance || $lastAttendance->type === 'departure') {
+                 return back()->with('error', 'Impossible de marquer le départ (Déjà parti ou pas encore arrivé).');
             }
         }
 
-        if (!$isAuthorized) {
-            return response()->json(['message' => 'Accès refusé. Informations manager incorrectes.'], 403);
+        Attendance::create([
+            'driver_id' => $driver->id,
+            'matricule' => $driver->matricule,
+            'first_name' => explode(' ', $driver->name)[0] ?? '',
+            'last_name' => explode(' ', $driver->name)[1] ?? '',
+            'type' => $validated['type'],
+            'created_at' => now(),
+        ]);
+
+        $msg = $validated['type'] === 'arrival' ? 'Arrivée marquée avec succès.' : 'Départ marqué avec succès.';
+        return back()->with('success', $msg);
+    }
+
+    public function export()
+    {
+        // Only allow admin to export
+        // Assuming 'is_admin' is available on user model.
+        // We can check via auth() or specific logic.
+        // The migration added is_admin column.
+        if (!auth()->user()->is_admin) {
+             abort(403);
         }
+
+        $fileName = 'rapport_presences_' . date('Y-m-d_H-i') . '.csv';
 
         $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="rapport_presence_' . date('Y-m-d') . '.csv"',
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
         ];
 
-        $callback = function () {
+        $columns = ['ID', 'Nom Chauffeur', 'Matricule', 'Type', 'Date', 'Heure'];
+
+        $callback = function() use ($columns) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['ID', 'Nom', 'Prénom', 'Matricule', 'Type', 'Date', 'Heure']);
+            fputcsv($file, $columns);
 
-            $attendances = Attendance::whereDate('created_at', Carbon::today())->get();
+            Attendance::with('driver')
+                ->orderBy('created_at', 'desc')
+                ->chunk(100, function($attendances) use ($file) {
+                    foreach ($attendances as $attendance) {
+                        $row['ID']  = $attendance->id;
+                        $row['Nom Chauffeur'] = $attendance->driver ? $attendance->driver->name : ($attendance->first_name . ' ' . $attendance->last_name);
+                        $row['Matricule'] = $attendance->driver ? $attendance->driver->matricule : ($attendance->matricule ?? 'N/A');
+                        $row['Type']  = $attendance->type === 'arrival' ? 'Arrivée' : 'Départ';
+                        $row['Date']  = $attendance->created_at->format('Y-m-d');
+                        $row['Heure'] = $attendance->created_at->format('H:i:s');
 
-            foreach ($attendances as $row) {
-                fputcsv($file, [
-                    $row->id,
-                    $row->last_name,
-                    $row->first_name,
-                    $row->matricule,
-                    $row->type === 'arrival' ? 'Arrivée' : 'Départ',
-                    $row->created_at->format('Y-m-d'),
-                    $row->created_at->format('H:i:s'),
-                ]);
-            }
+                        fputcsv($file, array($row['ID'], $row['Nom Chauffeur'], $row['Matricule'], $row['Type'], $row['Date'], $row['Heure']));
+                    }
+                });
 
             fclose($file);
         };
 
-        return new StreamedResponse($callback, 200, $headers);
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function storeManual(Request $request)
+    {
+        $validated = $request->validate([
+            'driver_id' => 'required|exists:drivers,id',
+            'type' => 'required|in:arrival,departure',
+            'date' => 'required|date',
+            'time' => 'required|date_format:H:i',
+        ]);
+
+        $driver = \App\Models\Driver::findOrFail($validated['driver_id']);
+
+        // Authorization check
+        if ($driver->user_id !== auth()->id() && !auth()->user()->is_admin) {
+            abort(403);
+        }
+
+        // Create DateTime from date and time
+        $dateTime = Carbon::parse($validated['date'] . ' ' . $validated['time']);
+
+        // Check for duplicate on that specific time/type?
+        // Or just allow it since it's manual override?
+        // Let's prevent exact duplicate for same type/day to avoid spam, but allow if time diff?
+        // Let's just create it. The user knows what they are doing.
+
+        // Create and save manually to ensure created_at is respected
+        // (created_at is not in fillable usually)
+        $attendance = new Attendance();
+        $attendance->driver_id = $driver->id;
+        $attendance->matricule = $driver->matricule;
+        $attendance->first_name = explode(' ', $driver->name)[0] ?? '';
+        $attendance->last_name = explode(' ', $driver->name)[1] ?? '';
+        $attendance->type = $validated['type'];
+        $attendance->created_at = $dateTime; // Explicitly set custom date
+        $attendance->updated_at = now();
+        $attendance->save();
+
+        return back()->with('success', 'Pointage manuel ajouté avec succès.');
+    }
+
+    public function update(Request $request, Attendance $attendance)
+    {
+        $validated = $request->validate([
+            'type' => 'required|in:arrival,departure',
+            'date' => 'required|date',
+            'time' => 'required|date_format:H:i',
+        ]);
+
+        $driver = $attendance->driver;
+
+        // Authorization check
+        if ($driver && $driver->user_id !== auth()->id() && !auth()->user()->is_admin) {
+             abort(403);
+        }
+        
+        $dateTime = Carbon::parse($validated['date'] . ' ' . $validated['time']);
+
+        $attendance->type = $validated['type'];
+        $attendance->created_at = $dateTime;
+        $attendance->save();
+
+        return back()->with('success', 'Pointage modifié avec succès.');
     }
 }
