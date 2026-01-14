@@ -8,8 +8,10 @@ declare global {
     }
 }
 
-window.route = (name, params, absolute, config = Ziggy as any) =>
-    route(name, params, absolute, config);
+window.route = (name, params, absolute, config = Ziggy as any) => {
+    const patchedConfig = { ...config, url: window.location.origin };
+    return route(name, params, absolute, patchedConfig);
+};
 
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';

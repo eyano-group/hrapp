@@ -68,7 +68,7 @@ class AttendanceController extends Controller
         
         // Authorization check
         if ($driver->user_id !== auth()->id()) {
-            abort(403);
+            return back()->with('error', 'Vous n\'avez pas le droit d\'exécuter cette opération.');
         }
 
         // Logic check: prevent double arrival/departure
@@ -109,7 +109,7 @@ class AttendanceController extends Controller
         // We can check via auth() or specific logic.
         // The migration added is_admin column.
         if (!auth()->user()->is_admin) {
-             abort(403);
+             return back()->with('error', 'Vous n\'avez pas le droit d\'exporter ce rapport.');
         }
 
         $fileName = 'rapport_presences_' . date('Y-m-d_H-i') . '.csv';
@@ -162,7 +162,7 @@ class AttendanceController extends Controller
 
         // Authorization check
         if ($driver->user_id !== auth()->id() && !auth()->user()->is_admin) {
-            abort(403);
+            return back()->with('error', 'Vous n\'avez pas le droit d\'exécuter cette opération.');
         }
 
         // Create DateTime from date and time
@@ -200,7 +200,7 @@ class AttendanceController extends Controller
 
         // Authorization check
         if ($driver && $driver->user_id !== auth()->id() && !auth()->user()->is_admin) {
-             abort(403);
+             return back()->with('error', 'Vous n\'avez pas le droit d\'exécuter cette opération.');
         }
         
         $dateTime = Carbon::parse($validated['date'] . ' ' . $validated['time']);

@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useFlashToast } from '@/hooks/use-flash-toast';
 import { Head, router, useForm } from '@inertiajs/react';
 import {
     CheckCircle,
@@ -157,6 +158,8 @@ export default function Dashboard({
     const handleCardClick = (driver: Driver) => {
         router.visit(route('drivers.show', driver.id));
     };
+
+    useFlashToast(); // Handle flash messages
 
     return (
         <div className="min-h-screen bg-slate-50 font-sans selection:bg-purple-100 dark:bg-slate-900 dark:selection:bg-purple-900">
