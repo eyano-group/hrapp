@@ -1,12 +1,15 @@
 import { route } from 'ziggy-js';
 import '../css/app.css';
+import { Ziggy } from './ziggy';
 
 declare global {
     interface Window {
         route: typeof route;
     }
 }
-window.route = route;
+
+window.route = (name, params, absolute, config = Ziggy as any) =>
+    route(name, params, absolute, config);
 
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
