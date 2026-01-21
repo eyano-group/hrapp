@@ -323,7 +323,7 @@ const AttendanceForm: React.FC<AttendanceFormProps> = ({ onSuccess }) => {
                             <Checkbox
                                 id="confirm"
                                 checked={checkboxConfirmed}
-                                onCheckedChange={(checked) =>
+                                onCheckedChange={(checked: any) =>
                                     setCheckboxConfirmed(checked === true)
                                 }
                                 className="mt-0.5 h-6 w-6"

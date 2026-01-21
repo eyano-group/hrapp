@@ -1,3 +1,4 @@
+import { ExportButtons } from '@/components/ExportButtons';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -24,9 +25,9 @@ import {
     LogOut,
     MoreVertical,
     Plus,
+    ShieldCheck,
     Smartphone,
     Trash2,
-    User,
     Users,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -39,6 +40,7 @@ interface Driver {
     phone: string;
     isPresent: boolean;
     lastActionTime: string | null;
+    managerName?: string; // Added for Admin
 }
 
 interface Stats {
@@ -177,39 +179,28 @@ export default function Dashboard({
                             <h1 className="text-xl leading-tight font-bold text-slate-800 dark:text-white">
                                 Bonjour, {auth.user.name}
                             </h1>
-                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                                Manager
+                            <p className="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                                {auth.user.is_admin ? (
+                                    <>
+                                        <ShieldCheck className="h-3 w-3 text-purple-600" />
+                                        Administrateur
+                                    </>
+                                ) : (
+                                    'Manager'
+                                )}
                             </p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
                         {auth.user.is_admin && (
-                            <Button
-                                onClick={() =>
+                            <ExportButtons
+                                onExport={(period) => {
                                     window.open(
-                                        route('attendance.export'),
+                                        route('attendance.export', { period }),
                                         '_blank',
-                                    )
-                                }
-                                className="hidden items-center gap-2 rounded-full bg-slate-900 px-6 font-medium text-white shadow-lg transition-all hover:bg-slate-800 hover:shadow-xl hover:ring-2 hover:ring-slate-900/10 active:scale-95 md:flex dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                    <polyline points="7 10 12 15 17 10" />
-                                    <line x1="12" x2="12" y1="15" y2="3" />
-                                </svg>
-                                Exporter Rapport
-                            </Button>
+                                    );
+                                }}
+                            />
                         )}
                         <Button
                             variant="ghost"
@@ -246,9 +237,13 @@ export default function Dashboard({
                 {/* Drivers Grid */}
                 <div>
                     <div className="mb-6 flex items-center justify-between">
-                        <h2 className="flex items-center gap-2 text-2xl font-bold text-slate-800 dark:text-white">
-                            <User className="h-6 w-6 text-purple-600" />
-                            Mes Chauffeurs
+                        <h2 className="flex items-center gap-3 text-2xl font-black text-slate-900 dark:text-white">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-purple-100 text-purple-600 dark:bg-purple-900/30">
+                                <Users className="h-6 w-6" />
+                            </div>
+                            {auth.user.is_admin
+                                ? 'Tous les Chauffeurs'
+                                : 'Mes Chauffeurs'}
                         </h2>
                     </div>
 
@@ -337,9 +332,19 @@ export default function Dashboard({
                                             {driver.matricule}
                                         </p>
                                     </div>
-                                    <div className="mb-6 flex items-center gap-2 text-sm text-slate-500">
-                                        <Smartphone className="h-4 w-4" />
-                                        {driver.phone || 'N/A'}
+                                    <div className="mb-6 flex items-center justify-between">
+                                        <div className="flex items-center gap-2 text-sm text-slate-500">
+                                            <Smartphone className="h-4 w-4" />
+                                            {driver.phone || 'N/A'}
+                                        </div>
+                                        {auth.user.is_admin && (
+                                            <Badge
+                                                variant="outline"
+                                                className="border-purple-100 bg-purple-50/50 text-[10px] text-purple-700 dark:border-purple-900/30 dark:bg-purple-900/10 dark:text-purple-400"
+                                            >
+                                                By: {driver.managerName}
+                                            </Badge>
+                                        )}
                                     </div>
 
                                     {!driver.isPresent ? (

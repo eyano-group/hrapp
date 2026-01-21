@@ -102,44 +102,64 @@ class AttendanceController extends Controller
         return back()->with('success', $msg);
     }
 
-    public function export()
+    public function export(Request $request)
     {
-        // Only allow admin to export
-        // Assuming 'is_admin' is available on user model.
-        // We can check via auth() or specific logic.
-        // The migration added is_admin column.
         if (!auth()->user()->is_admin) {
              return back()->with('error', 'Vous n\'avez pas le droit d\'exporter ce rapport.');
         }
 
-        $fileName = 'rapport_presences_' . date('Y-m-d_H-i') . '.csv';
+        $period = $request->query('period', 'all');
+        $query = Attendance::with(['driver.user']);
+
+        switch ($period) {
+            case 'today':
+                $query->whereDate('created_at', Carbon::today());
+                $fileName = 'rapport_presences_aujourdhui_' . date('Y-m-d') . '.csv';
+                break;
+            case 'week':
+                $query->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+                $fileName = 'rapport_presences_semaine_' . date('Y-m-d') . '.csv';
+                break;
+            case 'month':
+                $query->whereMonth('created_at', Carbon::now()->month)
+                      ->whereYear('created_at', Carbon::now()->year);
+                $fileName = 'rapport_presences_mois_' . date('Y-m') . '.csv';
+                break;
+            default:
+                $fileName = 'rapport_presences_complet_' . date('Y-m-d_H-i') . '.csv';
+                break;
+        }
 
         $headers = [
-            "Content-type"        => "text/csv",
+            "Content-type"        => "text/csv; charset=UTF-8",
             "Content-Disposition" => "attachment; filename=$fileName",
             "Pragma"              => "no-cache",
             "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
             "Expires"             => "0"
         ];
 
-        $columns = ['ID', 'Nom Chauffeur', 'Matricule', 'Type', 'Date', 'Heure'];
+        $columns = ['ID', 'Nom Chauffeur', 'Matricule', 'Rattaché à (Manager)', 'Type', 'Date', 'Heure'];
 
-        $callback = function() use ($columns) {
+        $callback = function() use ($columns, $query) {
             $file = fopen('php://output', 'w');
+            // Add BOM for Excel UTF-8 support
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
             fputcsv($file, $columns);
 
-            Attendance::with('driver')
-                ->orderBy('created_at', 'desc')
+            $query->orderBy('created_at', 'desc')
                 ->chunk(100, function($attendances) use ($file) {
                     foreach ($attendances as $attendance) {
-                        $row['ID']  = $attendance->id;
-                        $row['Nom Chauffeur'] = $attendance->driver ? $attendance->driver->name : ($attendance->first_name . ' ' . $attendance->last_name);
-                        $row['Matricule'] = $attendance->driver ? $attendance->driver->matricule : ($attendance->matricule ?? 'N/A');
-                        $row['Type']  = $attendance->type === 'arrival' ? 'Arrivée' : 'Départ';
-                        $row['Date']  = $attendance->created_at->format('Y-m-d');
-                        $row['Heure'] = $attendance->created_at->format('H:i:s');
+                        $row = [
+                            $attendance->id,
+                            $attendance->driver ? $attendance->driver->name : ($attendance->first_name . ' ' . $attendance->last_name),
+                            $attendance->driver ? $attendance->driver->matricule : ($attendance->matricule ?? 'N/A'),
+                            $attendance->driver && $attendance->driver->user ? $attendance->driver->user->name : 'N/A',
+                            $attendance->type === 'arrival' ? 'Arrivée' : 'Départ',
+                            $attendance->created_at->format('Y-m-d'),
+                            $attendance->created_at->format('H:i:s')
+                        ];
 
-                        fputcsv($file, array($row['ID'], $row['Nom Chauffeur'], $row['Matricule'], $row['Type'], $row['Date'], $row['Heure']));
+                        fputcsv($file, $row);
                     }
                 });
 

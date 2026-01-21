@@ -17,6 +17,9 @@ class DashboardController extends Controller
         
         if (!$user->is_admin) {
             $query->where('user_id', $user->id);
+        } else {
+            // Include manager name for admin
+            $query->with('user');
         }
         
         $drivers = $query->with(['attendances' => function($query) {
@@ -39,6 +42,7 @@ class DashboardController extends Controller
                     'phone' => $driver->phone,
                     'isPresent' => $isPresent,
                     'lastActionTime' => $lastAttendance ? $lastAttendance->created_at->format('H:i') : null,
+                    'managerName' => $driver->user ? $driver->user->name : 'N/A', // Added for Admin
                 ];
             });
 
